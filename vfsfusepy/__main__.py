@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-import os
+from argparse import ArgumentParser
 import errno
+from fuse import FUSE, FuseOSError, Operations
 import git
 from loguru import logger
-from typing import Optional, Dict, Any
-from argparse import ArgumentParser
-from fuse import FUSE, FuseOSError, Operations
+import os
+from typing import Optional, Dict, Any, List
 
 
 class VFS(Operations):
@@ -32,7 +32,7 @@ class VFS(Operations):
             )
         }
 
-    def readdir(self, path: str, fh: int) -> [str]:
+    def readdir(self, path: str, fh: int) -> List[str]:
         return [".", ".."] + os.listdir(f"{self.repo.working_dir}{path}")
 
     def create(self, path: str, mode: int) -> int:
@@ -52,8 +52,8 @@ class VFS(Operations):
             with open(f"{self.repo.working_dir}{path}", "rb") as f:
                 f.seek(offset)
                 return f.read(size)
-        except FileNotFoundError:
-            raise FuseOSError(errno.ENOENT) from None
+        except FileNotFoundError as e:
+            raise FuseOSError(errno.ENOENT) from e
 
     def write(self, path: str, data: bytes, offset: int, fh: int) -> int:
         file_path = os.path.join(self.repo.working_dir, path.lstrip("/"))
@@ -72,8 +72,8 @@ class VFS(Operations):
         try:
             with open(f"{self.repo.working_dir}{path}", "rb+") as f:
                 f.truncate(length)
-        except FileNotFoundError:
-            raise FuseOSError(errno.ENOENT) from None
+        except FileNotFoundError as e:
+            raise FuseOSError(errno.ENOENT) from e
 
     def unlink(self, path: str) -> None:
         file_path = os.path.join(self.repo.working_dir, path.lstrip("/"))
