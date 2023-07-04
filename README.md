@@ -1,3 +1,6 @@
+![lint workflow](https://github.com/nero19960329/vfs-fuse/actions/workflows/lint.yml/badge.svg)
+![integration tests workflow](https://github.com/nero19960329/vfs-fuse/actions/workflows/integration_tests.yml/badge.svg)
+
 # VFS-FUSE
 
 A versioned file system based on FUSE and Git, written in Python.
