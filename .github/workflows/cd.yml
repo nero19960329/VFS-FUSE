@@ -21,11 +21,11 @@ jobs:
       run: echo "Version is ${{ steps.versioning.outputs.version }}"
     - name: Modify version  # vfsfusepy/version.py: __version__ = "..."
       run: sed -i "s/__version__ = \".*\"/__version__ = \"${{ steps.versioning.outputs.version }}\"/" vfsfusepy/version.py
-    # - name: Commit version  # use GITHUB_TOKEN, username: github-actions[bot], email: github-actions[bot]@users.noreply
-    #   run: |
-    #     git config --local user.email "github-actions[bot]@users.noreply.github.com"
-    #     git config --local user.name "github-actions[bot]"
-    #     git commit -am "Bump version to ${{ steps.versioning.outputs.version }}"
+    - name: Commit version  # use GITHUB_TOKEN, username: github-actions[bot], email: github-actions[bot]@users.noreply
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git commit -am "Bump version to ${{ steps.versioning.outputs.version }}"
     # - name: Push version
     #   uses: ad-m/github-push-action@v0.6.0
     #   with:
