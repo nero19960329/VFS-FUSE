@@ -21,7 +21,7 @@ jobs:
       run: echo "Version is ${{ steps.versioning.outputs.version }}"
     - name: Modify version  # vfsfusepy/version.py: __version__ = "..."
       run: sed -i "s/__version__ = \".*\"/__version__ = \"${{ steps.versioning.outputs.version }}\"/" vfsfusepy/version.py
-    - name: Commit version  # use GITHUB_TOKEN, username: github-actions[bot], email: github-actions[bot]@users.noreply
+    - name: Commit version  # use GH_TOKEN, username: github-actions[bot], email: github-actions[bot]@users.noreply
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
@@ -29,12 +29,12 @@ jobs:
     - name: Push version
       uses: ad-m/github-push-action@v0.6.0
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GH_TOKEN }}
         branch: continuous-deployment
     # - name: Tag version
     #   uses: mathieudutour/github-tag-action@v5.1.1
     #   with:
-    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+    #     github_token: ${{ secrets.GH_TOKEN }}
     #     tag: ${{ steps.versioning.outputs.version }}
     #     message: "Release ${{ steps.versioning.outputs.version }}"
     #     release_branches: main
