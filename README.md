@@ -95,7 +95,7 @@ sudo apt-get update && sudo apt-get install fuse
 ```
 
 ## Contributing
-We welcome contributions to this repository! If you would like to contribute code, please take a moment to read our [contribution guidelines](https://github.com/nero19960329/vfs-fuse/CONTRIBUTING.md).
+We welcome contributions to this repository! If you would like to contribute code, please take a moment to read our [contribution guidelines](https://github.com/nero19960329/VFS-FUSE/blob/main/CONTRIBUTING.md).
 
 By following these guidelines, you can ensure that your contributions are in line with our coding standards and testing procedures.
 
