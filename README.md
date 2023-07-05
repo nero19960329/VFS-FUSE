@@ -15,6 +15,12 @@ VFS-FUSE is a file system that tracks every version of files, just like Git. It 
 
 ## Installation
 
+### From PyPI
+
+```bash
+pip install vfsfusepy
+```
+
 ### From Source
 
 1. Clone the repository:
@@ -34,7 +40,9 @@ pip install -r requirements.txt
 To use VFS-FUSE, you need to specify the directory of the Git repository and the mount point of the file system:
 
 ```bash
-python vfsfusepy/__main__.py /path/to/git_dir /path/to/mount_point
+vfs-fuse /path/to/git_dir /path/to/mount_point  # if installed from PyPI
+
+python vfsfusepy/__main__.py /path/to/git_dir /path/to/mount_point  # if installed from source
 ```
 
 Where:
@@ -50,10 +58,11 @@ Here is an example of how to use VFS-FUSE:
 
 ```bash
 # Mount the file system
-python vfsfusepy/__main__.py /data/vfs-root /data/vfs-mount
+mkdir /data/vfs-root
+mkdir /data/vfs-mount
+vfs-fuse /data/vfs-root /data/vfs-mount
 
 # Go to the mount point
-mkdir /data/vfs-mount
 cd /data/vfs-mount
 
 # Create a new file
@@ -69,7 +78,7 @@ rm test.txt
 git log
 ```
 
-In this example, when you write to test.txt, the file system automatically commits the changes to the Git repository located at /data/vfs-root. You can then use standard Git commands to view the commit history and checkout previous versions of the file.
+In this example, when you write to test.txt, the file system automatically commits the changes to the Git repository located at `/data/vfs-root`. You can then use standard Git commands to view the commit history and checkout previous versions of the file.
 
 ## FAQ
 
@@ -84,6 +93,13 @@ You need to install the FUSE library. On Ubuntu, you can install it with the fol
 ```bash
 sudo apt-get update && sudo apt-get install fuse
 ```
+
+## Contributing
+We welcome contributions to this repository! If you would like to contribute code, please take a moment to read our [contribution guidelines](https://github.com/nero19960329/vfs-fuse/CONTRIBUTING.md).
+
+By following these guidelines, you can ensure that your contributions are in line with our coding standards and testing procedures.
+
+We appreciate your interest and look forward to your contributions!
 
 ## License
 
