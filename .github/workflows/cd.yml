@@ -1,0 +1,75 @@
+name: continuous deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  cd:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Fetches all history for all branches and tags
+    - name: Bump version
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v6.1
+      with:
+        github_token: ${{ secrets.GH_TOKEN }}
+        release_branches: main
+        default_bump: false
+        dry_run: true
+    - name: Check version
+      run: |
+        if [ -z "${{ steps.tag_version.outputs.new_tag }}" ]; then
+          echo "No new tag, exiting"
+          echo "SKIP=true" >> $GITHUB_ENV
+          exit 0
+        fi
+        echo "SKIP=false" >> $GITHUB_ENV
+        echo "New Tag is ${{ steps.tag_version.outputs.new_tag }}"
+        echo "Changelog is ${{ steps.tag_version.outputs.changelog }}"
+    - if: env.SKIP != 'true'
+      name: Modify version
+      run: sed -i "s/__version__ = \".*\"/__version__ = \"${{ steps.tag_version.outputs.new_version }}\"/" vfsfusepy/version.py # Use sed command to replace the version string
+    - if: env.SKIP != 'true'
+      name: Commit version
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git commit -am "chore: bump version to ${{ steps.tag_version.outputs.new_tag }}"
+        echo "COMMIT_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
+    - if: env.SKIP != 'true'
+      name: Push tag
+      uses: ad-m/github-push-action@v0.6.0
+      with:
+        github_token: ${{ secrets.GH_TOKEN }}
+        branch: main
+    - if: env.SKIP != 'true'
+      name: Tag version
+      uses: mathieudutour/github-tag-action@v6.1
+      with:
+        github_token: ${{ secrets.GH_TOKEN }}
+        release_branches: main
+        default_bump: false
+        commit_sha: ${{ env.COMMIT_SHA }}
+        custom_tag: ${{ steps.tag_version.outputs.new_version }}
+    - if: env.SKIP != 'true'
+      name: Create a GitHub release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ steps.tag_version.outputs.new_tag }}
+        name: Release ${{ steps.tag_version.outputs.new_tag }}
+        body: ${{ steps.tag_version.outputs.changelog }}
+    - if: env.SKIP != 'true'
+      name: Build wheel
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel build
+        python -m build --sdist --wheel --outdir dist/
+    - if: env.SKIP != 'true'
+      name: Upload to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        packages-dir: dist/
+        password: ${{ secrets.PYPI_API_TOKEN}}
