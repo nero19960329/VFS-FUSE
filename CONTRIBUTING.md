@@ -11,6 +11,11 @@ We have integration tests in place to ensure the reliability and functionality o
 ## Versioning
 We follow semantic versioning for our release process. The version number is determined based on the commits in the repository. Each commit contributes to the versioning process, and the next version is determined automatically.
 
+## Commit Message Guidelines
+We kindly request that all commit messages adhere to the conventional commit message format. Conventional commit messages help in maintaining a standardized and informative commit history.
+
+To follow the conventional commit message format, please refer to the guidelines provided in the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/). By following this format, you can provide clear and meaningful commit messages that facilitate better understanding and tracking of changes.
+
 ## Building Python Package
 To build the Python package locally, please follow the steps below:
 
