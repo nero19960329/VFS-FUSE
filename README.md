@@ -71,8 +71,20 @@ echo "Hello, World!" > test.txt
 # View the file
 cat test.txt
 
+# Rename the file
+mv test.txt test2.txt
+
 # Remove the file
-rm test.txt
+rm test2.txt
+
+# Create a new directory
+mkdir test_dir
+
+# Rename the directory
+mv test_dir test_dir2
+
+# Remove the directory
+rm -rf test_dir2
 
 # View the commit history
 git log
