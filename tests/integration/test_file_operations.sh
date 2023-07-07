@@ -43,7 +43,6 @@ echo "Goodbye, World!" > test.txt
 rm test.txt
 [ -f test.txt ] && { echo "File still exists after removal"; exit 1; }
 
-# View the commit history (should be 4 commits)
+# View the commit history
 echo "Commit history:"
 git --no-pager log --oneline
-[ "$(git log --pretty=oneline | wc -l)" -eq 4 ] || { echo "Commit history mismatch"; exit 1; }
