@@ -51,6 +51,9 @@ mkdir test
 rm -rf test
 [ -d test ] && { echo "Directory still exists after removal"; exit 1; }
 
+# Check `/tmp/vfs-mount` only has the `.git` directory
+[ "$(ls -A /tmp/vfs-mount)" = ".git" ] || { echo "Unexpected files in /tmp/vfs-mount"; exit 1; }
+
 # View the commit history
 echo "Commit history:"
 git --no-pager log --oneline
