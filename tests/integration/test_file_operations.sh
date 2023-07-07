@@ -28,6 +28,9 @@ sleep 5
 # Go to the mount point
 pushd /tmp/vfs-mount
 
+# Check Git Status
+git status
+
 # Create a new file
 echo "Hello, World!" > test.txt
 [ "$(cat test.txt)" = "Hello, World!" ] || { echo "File contents mismatch"; exit 1; }

@@ -40,6 +40,8 @@ class VFS(Operations):
         try:
             fd = os.open(file_path, os.O_WRONLY | os.O_CREAT, mode)
             os.close(fd)
+            if path.lstrip("/").startswith(".git"):
+                return 0
             self.repo.git.add(file_path)
             self.repo.git.commit("-m", f"create file {path}")
             return 0
@@ -56,6 +58,10 @@ class VFS(Operations):
             raise FuseOSError(errno.ENOENT) from e
 
     def write(self, path: str, data: bytes, offset: int, fh: int) -> int:
+        if path.lstrip("/").startswith(".git"):
+            os.lseek(fh, offset, os.SEEK_SET)
+            return os.write(fh, data)
+
         file_path = os.path.join(self.repo.working_dir, path.lstrip("/"))
         try:
             with open(file_path, "wb") as f:
@@ -69,6 +75,12 @@ class VFS(Operations):
             raise FuseOSError(errno.EACCES) from e
 
     def truncate(self, path: str, length: int, fh: Optional[int] = None) -> None:
+        if path.lstrip("/").startswith(".git"):
+            full_path = os.path.join(self.repo.working_dir, path.lstrip("/"))
+            with open(full_path, "r+") as f:
+                f.truncate(length)
+            return
+
         try:
             with open(f"{self.repo.working_dir}{path}", "rb+") as f:
                 f.truncate(length)
@@ -79,6 +91,8 @@ class VFS(Operations):
         file_path = os.path.join(self.repo.working_dir, path.lstrip("/"))
         try:
             os.unlink(file_path)
+            if path.lstrip("/").startswith(".git"):
+                return
             self.repo.git.rm(file_path)
             self.repo.git.commit("-m", f"remove file {path}")
         except Exception as e:
