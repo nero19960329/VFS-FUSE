@@ -99,6 +99,25 @@ class VFS(Operations):
             logger.error(f"Failed to remove file: {file_path}. Error: {str(e)}")
             raise FuseOSError(errno.EACCES) from e
 
+    def mkdir(self, path: str, mode: int) -> None:
+        dir_path = os.path.join(self.repo.working_dir, path.lstrip("/"))
+        gitkeep_path = os.path.join(dir_path, ".gitkeep")
+        try:
+            os.mkdir(dir_path, mode)
+            if path.lstrip("/").startswith(".git"):
+                return
+            # Create .gitkeep file to track empty directories in Git
+            with open(gitkeep_path, "w") as f:
+                pass
+            self.repo.git.add(dir_path)
+            self.repo.git.commit("-m", f"create directory {path}")
+        except Exception as e:
+            logger.error(f"Failed to create directory: {dir_path}. Error: {str(e)}")
+            raise FuseOSError(errno.EACCES) from e
+
+    def rmdir(self, path: str) -> None:
+        return
+
 
 def parse_args():
     parser = ArgumentParser(

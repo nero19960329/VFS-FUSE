@@ -43,6 +43,14 @@ echo "Goodbye, World!" > test.txt
 rm test.txt
 [ -f test.txt ] && { echo "File still exists after removal"; exit 1; }
 
+# Create a new directory
+mkdir test
+[ -d test ] || { echo "Directory not created"; exit 1; }
+
+# Remove the directory
+rm -rf test
+[ -d test ] && { echo "Directory still exists after removal"; exit 1; }
+
 # View the commit history
 echo "Commit history:"
 git --no-pager log --oneline
