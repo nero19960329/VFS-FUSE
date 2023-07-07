@@ -118,6 +118,46 @@ class VFS(Operations):
     def rmdir(self, path: str) -> None:
         return
 
+    def rename(self, old_path: str, new_path: str) -> None:
+        old_full_path = os.path.join(self.repo.working_dir, old_path.lstrip("/"))
+        new_full_path = os.path.join(self.repo.working_dir, new_path.lstrip("/"))
+
+        if old_path.lstrip("/").startswith(".git") and new_path.lstrip("/").startswith(
+            ".git"
+        ):
+            os.rename(old_full_path, new_full_path)
+            return
+        elif old_path.lstrip("/").startswith(".git"):
+            # This is equivalent to creating a new file or directory at new_path
+            os.rename(old_full_path, new_full_path)
+            self.repo.git.add(new_full_path)
+            self.repo.git.commit("-m", f"create file {new_path}")
+            return
+        elif new_path.lstrip("/").startswith(".git"):
+            # This is equivalent to deleting a file or directory at old_path
+            os.rename(old_full_path, new_full_path)
+            self.repo.git.rm(old_full_path)
+            self.repo.git.commit("-m", f"remove file {old_path}")
+            return
+
+        try:
+            # Check if the old file/directory is tracked by Git
+            old_path_strip = old_path.lstrip("/")
+            is_tracked = any(
+                path.startswith(old_path_strip)
+                for path in self.repo.git.ls_files().split("\n")
+            )
+            if is_tracked:
+                self.repo.git.mv(old_full_path, new_full_path)
+                self.repo.git.commit("-m", f"rename from {old_path} to {new_path}")
+            else:
+                os.rename(old_full_path, new_full_path)
+        except Exception as e:
+            logger.error(
+                f"Failed to rename: {old_full_path} to {new_full_path}. Error: {str(e)}"
+            )
+            raise FuseOSError(errno.EACCES) from e
+
 
 def parse_args():
     parser = ArgumentParser(
