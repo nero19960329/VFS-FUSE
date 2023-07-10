@@ -45,3 +45,36 @@ def write(path: str, data: bytes, offset: int, fh: int) -> int:
 def truncate(path: str, length: int, fh: Optional[int] = None) -> None:
     with open(path, "rb+") as f:
         f.truncate(length)
+
+
+def access(path: str, mode: int) -> None:
+    if not os.access(path, mode):
+        raise PermissionError(path)
+
+
+def readlink(path: str) -> str:
+    pathname = os.readlink(path)
+    if pathname.startswith("/"):
+        # Path name is absolute, sanitize it.
+        return os.path.relpath(pathname, os.path.dirname(path))
+    else:
+        return pathname
+
+
+def statfs(path: str) -> Dict[str, Any]:
+    stv = os.statvfs(path)
+    return {
+        key: getattr(stv, key)
+        for key in (
+            "f_bavail",
+            "f_bfree",
+            "f_blocks",
+            "f_bsize",
+            "f_favail",
+            "f_ffree",
+            "f_files",
+            "f_flag",
+            "f_frsize",
+            "f_namemax",
+        )
+    }

@@ -113,3 +113,50 @@ class VFS(Operations):
         self.repo.git.add(old_full_path)
         self.repo.git.add(new_full_path)
         git_operations.commit(self.repo, "-m", f"rename from {old_path} to {new_path}")
+
+    @handle_os_errors
+    def access(self, path: str, mode: int) -> None:
+        file_operations.access(file_path(self.repo.working_dir, path), mode)
+
+    @handle_os_errors
+    def chmod(self, path: str, mode: int) -> None:
+        full_path = file_path(self.repo.working_dir, path)
+        os.chmod(full_path, mode)
+        if is_git_path(path):
+            return
+
+        self.repo.git.add(full_path)
+        git_operations.commit(self.repo, "-m", f"change mode of {path}")
+
+    @handle_os_errors
+    def readlink(self, path: str) -> str:
+        full_path = file_path(self.repo.working_dir, path)
+        pathname = os.readlink(full_path)
+        if pathname.startswith("/"):
+            # Path name is absolute, sanitize it.
+            return os.path.relpath(pathname, self.repo.working_dir)
+        return pathname
+
+    @handle_os_errors
+    def mknod(self, path: str, mode: int, dev: int) -> None:
+        os.mknod(file_path(self.repo.working_dir, path), mode, dev)
+
+    @handle_os_errors
+    def symlink(self, target: str, source: str) -> None:
+        full_path = file_path(self.repo.working_dir, target)
+        os.symlink(file_path(self.repo.working_dir, source), full_path)
+        if is_git_path(target):
+            return
+
+        self.repo.git.add(full_path)
+        git_operations.commit(self.repo, "-m", f"create file {target}")
+
+    @handle_os_errors
+    def link(self, target: str, source: str) -> None:
+        full_path = file_path(self.repo.working_dir, target)
+        os.link(file_path(self.repo.working_dir, source), full_path)
+        if is_git_path(target):
+            return
+
+        self.repo.git.add(full_path)
+        git_operations.commit(self.repo, "-m", f"create file {target}")
