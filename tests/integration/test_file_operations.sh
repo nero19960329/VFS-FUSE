@@ -39,6 +39,9 @@ echo "Hello, World!" > test.txt
 echo "Hello, World!" > test.txt
 [ "$(cat test.txt)" = "Hello, World!" ] || { echo "File contents mismatch"; exit 1; }
 
+# Read file (testing 'read')
+cat test.txt
+
 # Modify the file
 echo "Goodbye, World!" > test.txt
 [ "$(cat test.txt)" = "Goodbye, World!" ] || { echo "File contents mismatch"; exit 1; }
