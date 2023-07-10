@@ -60,7 +60,7 @@ class VFS(Operations):
     @handle_os_errors
     def unlink(self, path: str) -> None:
         full_path = file_path(self.repo.working_dir, path)
-        file_operations.unlink(full_path)
+        os.unlink(full_path)
         if is_git_path(path):
             return
 
@@ -70,7 +70,7 @@ class VFS(Operations):
     @handle_os_errors
     def mkdir(self, path: str, mode: int) -> None:
         full_path = file_path(self.repo.working_dir, path)
-        file_operations.mkdir(full_path, mode)
+        os.mkdir(full_path, mode)
         if is_git_path(path):
             return
 
@@ -85,13 +85,13 @@ class VFS(Operations):
     def rmdir(self, path: str) -> None:
         full_path = file_path(self.repo.working_dir, path)
         if os.path.exists(full_path):
-            file_operations.rmdir(full_path)
+            os.rmdir(full_path)
 
     @handle_os_errors
     def rename(self, old_path: str, new_path: str) -> None:
         old_full_path = file_path(self.repo.working_dir, old_path)
         new_full_path = file_path(self.repo.working_dir, new_path)
-        file_operations.rename(old_full_path, new_full_path)
+        os.rename(old_full_path, new_full_path)
         if is_git_path(old_path) and is_git_path(new_path):
             return
         if is_git_path(old_path):
