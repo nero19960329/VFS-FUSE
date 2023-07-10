@@ -32,7 +32,7 @@ class VFS(Operations):
         file_operations.create(full_path, mode)
         if is_git_path(path):
             return 0
-        self.repo.git.add(full_path)
+        git_operations.add(self.repo, full_path)
         git_operations.commit(self.repo, "-m", f"create file {path}")
         return 0
 
@@ -50,7 +50,7 @@ class VFS(Operations):
             return size
 
         full_path = file_path(self.repo.working_dir, path)
-        self.repo.git.add(full_path)
+        git_operations.add(self.repo, full_path)
         git_operations.commit(self.repo, "-m", f"write file {path}")
         return size
 
@@ -61,7 +61,7 @@ class VFS(Operations):
         if is_git_path(path):
             return 0
 
-        self.repo.git.add(full_path)
+        git_operations.add(self.repo, full_path)
         git_operations.commit(self.repo, "-m", f"truncate file {path}")
 
     @handle_os_errors
@@ -71,7 +71,7 @@ class VFS(Operations):
         if is_git_path(path):
             return
 
-        self.repo.git.rm(full_path)
+        git_operations.add(self.repo, full_path)
         git_operations.commit(self.repo, "-m", f"remove file {path}")
 
     @handle_os_errors
@@ -85,7 +85,7 @@ class VFS(Operations):
         # Create .gitkeep file to track empty directories in Git
         with open(gitkeep_path, "w") as f:
             pass
-        self.repo.git.add(full_path)
+        git_operations.add(self.repo, full_path)
         git_operations.commit(self.repo, "-m", f"create directory {path}")
 
     @handle_os_errors
@@ -102,7 +102,7 @@ class VFS(Operations):
         if is_git_path(old_path) and is_git_path(new_path):
             return
         if is_git_path(old_path):
-            self.repo.git.add(new_full_path)
+            git_operations.add(self.repo, new_full_path)
             git_operations.commit(self.repo, "-m", f"create file {new_path}")
             return
         if is_git_path(new_path):
@@ -110,8 +110,8 @@ class VFS(Operations):
             git_operations.commit(self.repo, "-m", f"remove file {old_path}")
             return
 
-        self.repo.git.add(old_full_path)
-        self.repo.git.add(new_full_path)
+        git_operations.add(self.repo, old_full_path)
+        git_operations.add(self.repo, new_full_path)
         git_operations.commit(self.repo, "-m", f"rename from {old_path} to {new_path}")
 
     @handle_os_errors
@@ -125,7 +125,7 @@ class VFS(Operations):
         if is_git_path(path):
             return
 
-        self.repo.git.add(full_path)
+        git_operations.add(self.repo, full_path)
         git_operations.commit(self.repo, "-m", f"change mode of {path}")
 
     @handle_os_errors
@@ -148,7 +148,7 @@ class VFS(Operations):
         if is_git_path(target):
             return
 
-        self.repo.git.add(full_path)
+        git_operations.add(self.repo, full_path)
         git_operations.commit(self.repo, "-m", f"create file {target}")
 
     @handle_os_errors
@@ -158,5 +158,5 @@ class VFS(Operations):
         if is_git_path(target):
             return
 
-        self.repo.git.add(full_path)
+        git_operations.add(self.repo, full_path)
         git_operations.commit(self.repo, "-m", f"create file {target}")
