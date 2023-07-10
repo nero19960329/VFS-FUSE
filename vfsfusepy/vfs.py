@@ -56,7 +56,13 @@ class VFS(Operations):
 
     @handle_os_errors
     def truncate(self, path: str, length: int, fh: Optional[int] = None) -> int:
-        file_operations.truncate(file_path(self.repo.working_dir, path), length, fh)
+        full_path = file_path(self.repo.working_dir, path)
+        file_operations.truncate(full_path, length, fh)
+        if is_git_path(path):
+            return 0
+
+        self.repo.git.add(full_path)
+        git_operations.commit(self.repo, "-m", f"truncate file {path}")
 
     @handle_os_errors
     def unlink(self, path: str) -> None:
