@@ -4,6 +4,7 @@ import os
 from typing import Optional, Dict, Any, List
 
 import vfsfusepy.file_operations as file_operations
+import vfsfusepy.git_operations as git_operations
 from vfsfusepy.utils import is_git_path, handle_os_errors, file_path
 
 
@@ -32,7 +33,7 @@ class VFS(Operations):
         if is_git_path(path):
             return 0
         self.repo.git.add(full_path)
-        self.repo.git.commit("-m", f"create file {path}")
+        git_operations.commit(self.repo, "-m", f"create file {path}")
         return 0
 
     @handle_os_errors
@@ -50,7 +51,7 @@ class VFS(Operations):
 
         full_path = file_path(self.repo.working_dir, path)
         self.repo.git.add(full_path)
-        self.repo.git.commit("-m", f"write file {path}")
+        git_operations.commit(self.repo, "-m", f"write file {path}")
         return size
 
     @handle_os_errors
@@ -65,7 +66,7 @@ class VFS(Operations):
             return
 
         self.repo.git.rm(full_path)
-        self.repo.git.commit("-m", f"remove file {path}")
+        git_operations.commit(self.repo, "-m", f"remove file {path}")
 
     @handle_os_errors
     def mkdir(self, path: str, mode: int) -> None:
@@ -79,7 +80,7 @@ class VFS(Operations):
         with open(gitkeep_path, "w") as f:
             pass
         self.repo.git.add(full_path)
-        self.repo.git.commit("-m", f"create directory {path}")
+        git_operations.commit(self.repo, "-m", f"create directory {path}")
 
     @handle_os_errors
     def rmdir(self, path: str) -> None:
@@ -96,13 +97,13 @@ class VFS(Operations):
             return
         if is_git_path(old_path):
             self.repo.git.add(new_full_path)
-            self.repo.git.commit("-m", f"create file {new_path}")
+            git_operations.commit(self.repo, "-m", f"create file {new_path}")
             return
         if is_git_path(new_path):
             self.repo.git.rm(old_full_path)
-            self.repo.git.commit("-m", f"remove file {old_path}")
+            git_operations.commit(self.repo, "-m", f"remove file {old_path}")
             return
 
         self.repo.git.add(old_full_path)
         self.repo.git.add(new_full_path)
-        self.repo.git.commit("-m", f"rename from {old_path} to {new_path}")
+        git_operations.commit(self.repo, "-m", f"rename from {old_path} to {new_path}")
