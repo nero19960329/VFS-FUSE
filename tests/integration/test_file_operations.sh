@@ -35,6 +35,10 @@ git status
 echo "Hello, World!" > test.txt
 [ "$(cat test.txt)" = "Hello, World!" ] || { echo "File contents mismatch"; exit 1; }
 
+# Write same contents to file (testing 'write')
+echo "Hello, World!" > test.txt
+[ "$(cat test.txt)" = "Hello, World!" ] || { echo "File contents mismatch"; exit 1; }
+
 # Modify the file
 echo "Goodbye, World!" > test.txt
 [ "$(cat test.txt)" = "Goodbye, World!" ] || { echo "File contents mismatch"; exit 1; }
