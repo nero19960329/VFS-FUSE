@@ -139,20 +139,25 @@ class VFS(Operations):
 
     @handle_os_errors
     def symlink(self, target: str, source: str) -> None:
-        full_path = file_path(self.repo.working_dir, target)
-        os.symlink(file_path(self.repo.working_dir, source), full_path)
+        target_full_path = file_path(self.repo.working_dir, target)
+        source_full_path = file_path(self.repo.working_dir, source)
+        target_rel_path = os.path.relpath(target_full_path, self.repo.working_dir)
+        source_rel_path = os.path.relpath(source_full_path, self.repo.working_dir)
+        os.symlink(source_rel_path, target_full_path)
         if is_git_path(target):
             return
 
-        git_operations.add(self.repo, full_path)
-        git_operations.commit(self.repo, "-m", f"create file {target}")
+        git_operations.add(self.repo, target_rel_path)
+        git_operations.commit(self.repo, "-m", f"create symlink {target} -> {source}")
 
     @handle_os_errors
     def link(self, target: str, source: str) -> None:
-        full_path = file_path(self.repo.working_dir, target)
-        os.link(file_path(self.repo.working_dir, source), full_path)
+        target_full_path = file_path(self.repo.working_dir, target)
+        source_full_path = file_path(self.repo.working_dir, source)
+        target_rel_path = os.path.relpath(target_full_path, self.repo.working_dir)
+        os.link(source_full_path, target_full_path)
         if is_git_path(target):
             return
 
-        git_operations.add(self.repo, full_path)
-        git_operations.commit(self.repo, "-m", f"create file {target}")
+        git_operations.add(self.repo, target_rel_path)
+        git_operations.commit(self.repo, "-m", f"create link {target} => {source}")
