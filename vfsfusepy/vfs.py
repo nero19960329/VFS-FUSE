@@ -81,10 +81,6 @@ class VFS(Operations):
         if is_git_path(path):
             return
 
-        gitkeep_path = os.path.join(full_path, ".gitkeep")
-        # Create .gitkeep file to track empty directories in Git
-        with open(gitkeep_path, "w") as f:
-            pass
         git_operations.add(self.repo, full_path)
         git_operations.commit(self.repo, "-m", f"create directory {path}")
 
