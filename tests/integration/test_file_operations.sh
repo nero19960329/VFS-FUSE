@@ -46,6 +46,46 @@ cat test.txt
 truncate -s 0 test.txt
 [ "$(cat test.txt)" = "" ] || { echo "File not truncated correctly"; exit 1; }
 
+# Check file permissions (testing 'access')
+touch test.txt || { echo "Cannot touch test.txt"; exit 1; }
+
+# Change file permissions (testing 'chmod')
+chmod 777 test.txt
+
+# Check symbolic link (testing 'readlink')
+ln -s test.txt link.txt
+[ "$(readlink link.txt)" = "test.txt" ] || { echo "Symlink not created correctly"; exit 1; }
+rm link.txt
+
+# Create a special file (testing 'mknod')
+mknod pipefile p
+rm pipefile
+
+# Check file system stats (testing 'statfs')
+df .
+
+# Check symbolic link creation (testing 'symlink')
+ln -s test.txt symlink.txt
+[ -L symlink.txt ] || { echo "Symlink not created"; exit 1; }
+rm symlink.txt
+
+# Check hard link creation (testing 'link')
+ln test.txt hardlink.txt
+[ -e hardlink.txt ] || { echo "Hardlink not created"; exit 1; }
+rm hardlink.txt
+
+# Check time stamp update (testing 'utimens')
+touch -a -m -t 202307101830.00 test.txt
+
+# Flush the file buffer (testing 'flush')
+sync
+
+# Release the file (testing 'release')
+: > test.txt
+
+# File synchronization (testing 'fsync')
+sync
+
 # Modify the file
 echo "Goodbye, World!" > test.txt
 [ "$(cat test.txt)" = "Goodbye, World!" ] || { echo "File contents mismatch"; exit 1; }
