@@ -42,6 +42,10 @@ echo "Hello, World!" > test.txt
 # Read file (testing 'read')
 cat test.txt
 
+# Truncate file (testing 'truncate')
+truncate -s 0 test.txt
+[ "$(cat test.txt)" = "" ] || { echo "File not truncated correctly"; exit 1; }
+
 # Modify the file
 echo "Goodbye, World!" > test.txt
 [ "$(cat test.txt)" = "Goodbye, World!" ] || { echo "File contents mismatch"; exit 1; }
