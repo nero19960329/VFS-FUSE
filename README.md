@@ -3,7 +3,9 @@
 
 # VFS-FUSE
 
-A versioned file system based on FUSE and Git, written in Python.
+A versioned file system based on FUSE and Git, written in Python. Fast example:
+
+<img src="figures/demo.svg" width="100%" />
 
 ## Description
 
@@ -61,6 +63,8 @@ Here is an example of how to use VFS-FUSE:
 mkdir /data/vfs-root
 mkdir /data/vfs-mount
 vfs-fuse /data/vfs-root /data/vfs-mount
+
+# Open a new terminal
 
 # Go to the mount point
 cd /data/vfs-mount
